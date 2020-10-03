@@ -1,25 +1,23 @@
-#include <map>
 class Solution {
 public:
-    // Find index i such that nums[i] <= target & nums[i+1] > target
     vector<int> twoSum(vector<int>& nums, int target) {
-        std::map<int,int> lEleMap;
-        vector<int> lRet;
-        for (int i = 0; i <= nums.size() -1 ; i++)
-        {
-            lEleMap[nums.at(i)] = i;
+        vector<int> result;
+        map<int, int> store;
+        int index = 0;
+        for(int i: nums) {
+            store[i] = index++;
         }
-        for (int i = 0; i <= nums.size() -1 ; i++)
-        {
-            auto indexItr = lEleMap.find(target - nums.at(i));
-            if (indexItr != lEleMap.end() && indexItr->second != i)
-            {
-                lRet.push_back(i);
-                lRet.push_back(indexItr->second);
+        index = 0;
+        for(int i: nums) {
+            int diffI = target - i;
+            auto fItr = store.find(diffI);
+            if (fItr != store.end() && index != fItr->second) {
+                result.push_back(std::min(fItr->second,index));
+                result.push_back(std::max(fItr->second,index));
                 break;
             }
+            index++;
         }
-        
-        return lRet;
+        return result;
     }
 };
