@@ -1,39 +1,32 @@
 class Solution {
 public:
     bool isPalindrome(int x) {
-        if ( x < 0 )
-            return false;
-        if ( x == 0 )
-            return true;
-        std::string lStrx = std::to_string(x);
-        bool lOdd = false;
-        if ( lStrx.length() == 1 )
-        {
-            return true;
-        }
-        if ( lStrx.length() == 2 )
-        {
-            return (lStrx.at(0) == lStrx.at(1));
-        }
-        if ( lStrx.length()%2 != 0)
-        {
-            lOdd = true;
-        }
-        int lMid;
-        if ( lOdd )
-        {
-            lMid = ceil( lStrx.length()/2 );
-        }
-        else
-        {
-            lMid = lStrx.length()/2;
-        }
-        for (int i=(lMid -1), j=( lOdd?(lMid+1):lMid ) ; ( i >= 0 && j < lStrx.length() );
-              --i, ++j)
-        {
-            if ( lStrx.at(i) != lStrx.at(j))
+            int origx = x;
+            if(x<0)
+            {
                 return false;
-        }
-        return true;
+            }
+            if(x<10)
+            {
+                return true;
+            }
+            if(x>2147483647)
+            {
+                return false;
+            }
+            int y = 10;
+            int z = 1;
+            int w = 0;
+            int p = 1;
+            while (x > 0)
+            {
+                p = x/y;
+                z = x % y;
+                if (w > (INT_MAX/10))
+                    return false;
+                w = w * 10 + z; 
+                x = p;
+            }
+            return w == origx;
     }
 };
