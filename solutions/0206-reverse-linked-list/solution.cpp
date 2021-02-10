@@ -3,41 +3,39 @@
  * struct ListNode {
  *     int val;
  *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {
-        ListNode* cur = head;
+        stack<ListNode*> aux;
         ListNode* prev = nullptr;
-        ListNode* newHead = nullptr;
-        if ( !head || head->next == nullptr)
+        ListNode* cur = head;
+        while (cur != nullptr)
         {
-            return head;
-        }
-        while ( cur != nullptr)
-        {
-            listStack.push(cur);
+            aux.push(cur);
             cur = cur->next;
         }
-        while(!listStack.empty())
+        ListNode* new_head = nullptr;
+        while (!aux.empty())
         {
-            cur = listStack.top();
-            if ( newHead == nullptr)
-            {
-                newHead = cur;
-            }
+            cur = aux.top();
             cur->next = nullptr;
-            listStack.pop();
-            if ( prev != nullptr )
+            cout<< cur->val << endl;
+            aux.pop();
+            if (new_head == nullptr)
+            {
+                new_head = cur;
+            }
+            if (prev != nullptr)
             {
                 prev->next = cur;
             }
             prev = cur;
         }
-        return newHead;
+        return new_head;
     }
-private:
-    stack<ListNode*> listStack;
 };
