@@ -9,23 +9,20 @@
 class Solution {
 public:
     bool hasCycle(ListNode *head) {
+        if (head == nullptr || head->next == nullptr)
+            return false;
         ListNode* cur = head;
-        ListNode* follower = head;
-        ListNode* runner = head;
-        while ( follower != nullptr && runner != nullptr )
+        ListNode* curcur = head->next;
+        while (cur != nullptr && curcur != nullptr)
         {
-            if ( runner->next != nullptr && runner->next->next != nullptr )
-                runner = runner->next->next;
+            if (cur == curcur)//Same node encountered a second time. Circular
+                return true;
+            cur = cur->next;
+            if (curcur->next != nullptr)
+                curcur = curcur->next->next;
             else
                 return false;
-            follower = follower->next;
-            if ( follower == runner )
-            {
-                return true;
-            }
         }
-        if ( !follower || !runner )
-            return false;
         return false;
     }
 };
