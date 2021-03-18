@@ -4,57 +4,65 @@
  *     int val;
  *     TreeNode *left;
  *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
-public:
-    vector<vector<int>> levelOrder(TreeNode* root) {
-        std::queue<TreeNode*> orderQ;
-        vector<vector<int>> levelV;
-        if ( !root )
-            return levelV;
-        orderQ.push(root);
-        orderQ.push(nullptr);
-        vector<int> level;
-        /*level.push_back(root->val);
-        levelV.emplace_back(level);
-        level.clear();*/
-        // 2 pow (l-1) entries in a level.
-        unsigned int levelIdx = 0;
-        unsigned int levelCount = 0;
-        while ( !orderQ.empty() )
-        {
-            TreeNode* node = orderQ.front();
-            orderQ.pop();
-            /*if ( levelCount++ == pow(2, levelIdx) )
+    void showContents(queue<TreeNode*> q)
+    {
+          while (!q.empty())
+          {
+            if (q.front() != nullptr)
             {
-                std::cout << " Inserting " << levelCount << " " << level.size() << std::endl;
-                if ( level.size() > 0 )
-                    levelV.emplace_back(level);
-                level.clear();
-                levelIdx++;
-            }*/
-            if ( node != nullptr )
-            {
-                level.push_back(node->val); 
-                if ( node->left )
-                    orderQ.push(node->left);
-                if ( node->right )
-                    orderQ.push(node->right);
-            }    
+                cout << "   " << q.front()->val;
+            }
             else
             {
-                std::cout << " Inserting " << levelCount << " " << level.size() << std::endl;
-                if ( level.size() > 0 )
-                    levelV.emplace_back(level);
-                level.clear();
-                levelIdx++;
-                if (orderQ.size() > 0 )
-                    orderQ.push(nullptr);
+                cout << "   " << "EndOfLevel";
             }
-            std::cout << " Compare " << levelCount << " " << pow(2, levelIdx) << std::endl;
+            q.pop();
+          }
+          std::cout << std::endl;
+    }
+public:
+    vector<vector<int>> levelOrder(TreeNode* root) {
+        queue<TreeNode*> q;
+        vector<vector<int>> result;
+        if (root == nullptr)
+            return result;
+        vector<int> start;
+        start.push_back(root->val);
+        result.push_back(start);
+        if (root->left != nullptr)
+            q.push(root->left);
+        if (root->right != nullptr)
+            q.push(root->right);
+        q.push(nullptr);
+        vector<int> level;
+        while (!q.empty())
+        {
+            TreeNode* front = q.front();
+            if (front == nullptr)
+            {
+                if (level.size() > 0)
+                    result.push_back(level);
+                level.clear();
+                if (q.size() != 1)
+                    q.push(nullptr);
+            }
+            else
+            {
+                
+                level.push_back(front->val);
+                if (front->left != nullptr)
+                    q.push(front->left);
+                if (front->right != nullptr)
+                    q.push(front->right);                
+            }
+            q.pop();
         }
-        return levelV;
+        return result;
     }
 };
