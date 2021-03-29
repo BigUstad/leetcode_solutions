@@ -4,58 +4,96 @@
  *     int val;
  *     TreeNode *left;
  *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
 public:
-    void buildTreeVec(TreeNode* head, vector<std::string>& vec)
-    {
-        std::stack<TreeNode*> orderStack;
-        // head null check is done.
-        orderStack.push(head);
-        TreeNode* cur;
-        while ( !orderStack.empty() )
-        {
-            cur = orderStack.top();
-            orderStack.pop();
-            if ( cur == nullptr )
-            {
-                vec.push_back("NULL");
-                //std::cout << " Pushing " << "NULL."<< std::endl;
-            }
-            else
-            {
-                vec.push_back(std::to_string(cur->val)); 
-                //std::cout << " Pushing " << std::to_string(cur->val) << std::endl;
-                orderStack.push(cur->right);
-                orderStack.push(cur->left);
-            }
-        }
-    }
     bool isSameTree(TreeNode* p, TreeNode* q) {
-        vector<std::string> tree1Vec;
-        vector<std::string> tree2Vec;
-        if ( !p && !q )
+        if (p == nullptr && q == nullptr)
             return true;
-        if ( p && !q || !p && q )
+        if ((p == nullptr && q != nullptr) ||
+            (p != nullptr && q == nullptr))
             return false;
-        buildTreeVec(p, tree1Vec);
-        buildTreeVec(q, tree2Vec);
-        if ( tree1Vec.size() != tree2Vec.size() )
+        stack<TreeNode*> s;
+        string psStr = "";
+        string qsStr = "";
+        queue<TreeNode*> nq;
+        string pqStr = "";
+        string qqStr = "";
+        TreeNode *cur = p;
+        while (cur != nullptr || !s.empty())
         {
-            return false;
-        }
-        for ( int i=0, j=0; ( i < tree1Vec.size() && j < tree2Vec.size() );
-                ++i, ++j)
-        {
-            if ( tree1Vec[i].compare(tree2Vec[j]) != 0 )
+            while(cur != nullptr)
             {
-                return false;
+                s.push(cur);
+                cur = cur->left;
             }
+            cur = s.top();
+            psStr.append(to_string(cur->val));
+            s.pop();
+            cur = cur->right;
         }
-        tree1Vec.clear();
-        tree2Vec.clear();
-        return true;
-    }    
+        while (!s.empty())
+        {
+            s.pop();
+        }
+        cur = q;
+        while (cur != nullptr || !s.empty())
+        {
+            while(cur != nullptr)
+            {
+                s.push(cur);
+                cur = cur->left;
+            }
+            cur = s.top();
+            qsStr.append(to_string(cur->val));
+            s.pop();
+            cur = cur->right;
+        }
+        bool res1 = (psStr.compare(qsStr) == 0);
+        cur = p;
+        nq.push(cur);
+        while(!nq.empty())
+        {
+            cur = nq.front();
+            if (cur == nullptr)
+            {
+                pqStr.append("N");
+                nq.pop();
+                continue;
+            }
+            pqStr.append(to_string(cur->val));
+            nq.pop();
+            //if (cur->left != nullptr)
+                nq.push(cur->left);
+            //else
+            //if (cur->right != nullptr)
+                nq.push(cur->right);
+        }
+        cur = q;
+        nq.push(cur);
+        while(!nq.empty())
+        {
+            cur = nq.front();
+            if (cur == nullptr)
+            {
+                qqStr.append("N");
+                nq.pop();
+                continue;
+            }
+            qqStr.append(to_string(cur->val));
+            nq.pop();
+            //if (cur->left != nullptr)
+                nq.push(cur->left);
+            //if (cur->right != nullptr)
+                nq.push(cur->right);
+        }
+        cout << pqStr << " " << qqStr <<endl;
+        bool res2 = (pqStr.compare(qqStr) == 0);
+        
+        return res1 && res2;
+    }
 };
