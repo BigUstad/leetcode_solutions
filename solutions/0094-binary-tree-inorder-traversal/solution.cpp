@@ -4,30 +4,42 @@
  *     int val;
  *     TreeNode *left;
  *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
 public:
-    vector<int> inorderTraversal(TreeNode* root) {
-        std::stack<TreeNode*> orderS;
-        vector<int> lRet;
-        TreeNode* cur = root;
-        while ( !orderS.empty() || cur != nullptr)
+    void inOrderHelper(TreeNode* root, list<int>& nums)
+    {
+        if (root == nullptr)
+            return;
+        if (root->left == nullptr && root->right == nullptr)
         {
-            if ( cur!= nullptr )
+            nums.push_back(root->val);
+            return;
+        }
+        stack<TreeNode*> s;
+        s.push(root);
+        TreeNode* cur = root->left;
+        while(cur != nullptr || !s.empty())
+        {
+            while(cur != nullptr)
             {
-                orderS.push(cur);
+                s.push(cur);
                 cur = cur->left;
             }
-            else
-            {
-                cur = orderS.top();
-                orderS.pop();
-                lRet.push_back(cur->val);
-                cur = cur->right;
-            }
+            cur = s.top();
+            s.pop();
+            // Process
+            nums.push_back(cur->val);
+            cur = cur->right;
         }
-        return lRet;
+    }
+    vector<int> inorderTraversal(TreeNode* root) {
+        list<int> result;
+        inOrderHelper(root, result);
+        return std::vector(result.begin(), result.end());
     }
 };
