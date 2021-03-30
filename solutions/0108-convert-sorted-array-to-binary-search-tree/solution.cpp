@@ -4,30 +4,33 @@
  *     int val;
  *     TreeNode *left;
  *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
 public:
-    TreeNode* constructNode(int nodeVal)
+    TreeNode* sortedArrToBST_Helper(vector<int>& nums, TreeNode *root, int l, int h)
     {
-        TreeNode* node = new TreeNode(nodeVal);
-        return node;
-    }
-    TreeNode* sortedArrayToBSTWithIndices(vector<int>& nums, int low, int high)
-    {
-        if ( low > high )
-        {
+        if (h < l || l < 0 || h < 0)
             return nullptr;
-        }
-        int mid = ( low + high )/2;
-        TreeNode* root = constructNode(nums[mid]);
-        root->left = sortedArrayToBSTWithIndices(nums, low, (mid - 1));
-        root->right = sortedArrayToBSTWithIndices(nums, (mid+1), high );
+        int mid = l + (h - l)/2;
+        cout << mid << endl;
+        root = new TreeNode(nums[mid]);
+        root->left = sortedArrToBST_Helper(nums, root, l, mid - 1);
+        root->right = sortedArrToBST_Helper(nums, root, mid + 1, h);
         return root;
     }
     TreeNode* sortedArrayToBST(vector<int>& nums) {
-        TreeNode* root (sortedArrayToBSTWithIndices(nums, 0, (nums.size() - 1)));
+        if (nums.size() == 0)
+            return nullptr;
+        if (nums.size() == 1)
+        {
+            TreeNode* root = new TreeNode(nums[0]);
+            return root;
+        }
+        TreeNode* root = sortedArrToBST_Helper(nums, root, 0, (nums.size() - 1));
         return root;
     }
 };
