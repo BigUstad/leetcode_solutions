@@ -12,38 +12,33 @@
 class Solution {
 public:
     int maxDepth(TreeNode* root) {
-        queue<TreeNode*> q;
-        int result = 0;
         if (root == nullptr)
-            return result;
-        if (root->left == nullptr && root->right == nullptr)
+            return 0;
+        if (root->right == nullptr && root->left == nullptr)
             return 1;
-        result++;
-        if (root->left != nullptr)
-            q.push(root->left);
-        if (root->right != nullptr)
-            q.push(root->right);
-        q.push(nullptr);
-        while (!q.empty())
+        stack<pair<int, TreeNode*>> s;
+        TreeNode* cur = root;
+        pair<int, TreeNode*> curStack;
+        s.push(make_pair(1, cur));
+        int maxDepth = INT_MIN;
+        int depth = 1;
+        while (!s.empty())
         {
-            TreeNode* front = q.front();
-            if (front == nullptr)
+            cur = s.top().second;
+            depth = s.top().first;
+            s.pop();
+            if (depth > maxDepth)
+                    maxDepth = depth;
+            if (cur->right != nullptr)
             {
-                if (q.size() != 1)//Just the nullptr means it is empty
-                {
-                    q.push(nullptr);                    
-                }
-                result++;
+                s.push(make_pair(depth + 1, cur->right));
             }
-            else
+            if (cur->left != nullptr)
             {
-                if (front->left != nullptr)
-                    q.push(front->left);
-                if (front->right != nullptr)
-                    q.push(front->right);                
+                s.push(make_pair(depth + 1, cur->left));
             }
-            q.pop();
+            cout << maxDepth << endl;
         }
-        return result;
+        return maxDepth;
     }
 };
