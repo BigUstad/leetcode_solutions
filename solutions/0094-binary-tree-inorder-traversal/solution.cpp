@@ -11,7 +11,7 @@
  */
 class Solution {
 public:
-    void inOrderHelper(TreeNode* root, list<int>& nums)
+    void inOrderHelper(TreeNode* root, vector<int>& nums)
     {
         if (root == nullptr)
             return;
@@ -21,25 +21,26 @@ public:
             return;
         }
         stack<TreeNode*> s;
-        s.push(root);
-        TreeNode* cur = root->left;
-        while(cur != nullptr || !s.empty())
+        TreeNode* cur = root;
+        while (!s.empty() || cur != nullptr)
         {
+            //Left
             while(cur != nullptr)
             {
                 s.push(cur);
                 cur = cur->left;
             }
+            // Process
             cur = s.top();
             s.pop();
-            // Process
             nums.push_back(cur->val);
+            //Right
             cur = cur->right;
         }
     }
     vector<int> inorderTraversal(TreeNode* root) {
-        list<int> result;
+        vector<int> result;
         inOrderHelper(root, result);
-        return std::vector(result.begin(), result.end());
+        return result;
     }
 };
