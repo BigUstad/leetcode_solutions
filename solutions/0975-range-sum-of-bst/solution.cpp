@@ -4,40 +4,31 @@
  *     int val;
  *     TreeNode *left;
  *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
 public:
-    int rangeSumBST(TreeNode* root, int L, int R) {
-        sum = 0;
-        searchBST(root, L, R);            
-        return sum;
+    int rangeSumBST(TreeNode* root, int low, int high) {
+        int ans = 0;
+        if (root == nullptr)
+            return -1;
+        if (root->left == nullptr && root->right == nullptr)
+            return root->val;
+        dfsHelper(root, low, high, ans);
+        return ans;
     }
-    void searchBST(TreeNode* root, int L, int R)
+    void dfsHelper(TreeNode* root, int low, int high, int& ans)
     {
-        std::string op = ( root )?std::to_string(root->val):"";
-        std::cout << op << std::endl;
-        if ( root == nullptr ) 
-        {
+        if (root == nullptr)
             return;
-        }
-        if ( root->val >= L && root->val <= R)
-        {
-            //std::cout << " Touching " << root->val << " " << " Including" << std::endl;
-            sum += root->val;
-        }
-        if (root->val > L)
-        {
-            searchBST(root->left, L, R);
-        }
-        if ( root->val < R)
-        {
-            searchBST(root->right, L, R);
-        }
-
+        if (root->val >= low && root->val <= high)
+            ans += root->val;
+        if (root->val > low)
+            dfsHelper(root->left, low, high, ans);
+        if (root->val < high)
+            dfsHelper(root->right, low, high, ans);
     }
-public:
-    int sum;
 };
-
