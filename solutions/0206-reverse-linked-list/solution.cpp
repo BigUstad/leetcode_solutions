@@ -11,31 +11,27 @@
 class Solution {
 public:
     ListNode* reverseList(ListNode* head) {
-        stack<ListNode*> aux;
+        if ( head == nullptr ) return head;
+        if ( head->next == nullptr ) return head;
+        if ( head->next->next == nullptr ) {
+            ListNode* temp = head->next;
+            head->next->next = head;
+            head->next = nullptr;
+            return temp;
+        }
         ListNode* prev = nullptr;
         ListNode* cur = head;
-        while (cur != nullptr)
-        {
-            aux.push(cur);
-            cur = cur->next;
-        }
-        ListNode* new_head = nullptr;
-        while (!aux.empty())
-        {
-            cur = aux.top();
-            cur->next = nullptr;
-            cout<< cur->val << endl;
-            aux.pop();
-            if (new_head == nullptr)
-            {
-                new_head = cur;
-            }
-            if (prev != nullptr)
-            {
-                prev->next = cur;
-            }
+        ListNode* next = head->next;
+        
+        while ( cur != nullptr ) {
+            ListNode* temp = cur->next;
+            cur->next = prev;
             prev = cur;
+            cur = next;
+            if ( next != nullptr) {
+                next = next->next;
+            }
         }
-        return new_head;
+        return prev;
     }
 };
