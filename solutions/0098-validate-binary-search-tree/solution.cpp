@@ -4,36 +4,53 @@
  *     int val;
  *     TreeNode *left;
  *     TreeNode *right;
- *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
  * };
  */
 class Solution {
 public:
     bool isValidBST(TreeNode* root) {
-        std::stack<TreeNode*> orderS;
-       // vector<int> lRetV;
-        TreeNode* cur = root;
-        TreeNode* prev = nullptr;
-        while ( !orderS.empty() || cur != nullptr)
-        {
-            if ( cur!= nullptr )
-            {
-                orderS.push(cur);
-                cur = cur->left;
+        for (auto& l: resultList) {
+            std::cout << l << "\t";
+        }
+        std::cout << std::endl;
+        inOrderTraversal(root);
+        for ( int i = 0;
+                i < resultList.size();
+                ++i ) {
+            if ( i > 0 &&
+                 resultList.at(i) < resultList.at(i - 1) ) {
+                return false;
             }
-            else
-            {
-                cur = orderS.top();
-                orderS.pop();
-                //lRetV.push_back(cur->val);
-                if ( prev && cur && prev->val >= cur->val )
-                {
-                    return false;
-                }
-                prev = cur;
-                cur = cur->right;
+            if ( (i+1) <= ( resultList.size() - 1 ) &&
+                 resultList.at(i) >= resultList.at(i + 1) ) {
+                return false;
             }
         }
         return true;
     }
+
+    void inOrderTraversal(TreeNode* root) {
+        if ( root == nullptr ) {
+            return;
+        }
+        std::stack<TreeNode*> s;
+        s.push(root);
+        TreeNode* node(root->left);
+        while ( !s.empty() || node != nullptr ) {
+            while ( node != nullptr ) {
+                s.push(node);
+                node = node->left;
+            }
+            node = s.top();
+            s.pop();
+            // Process
+            resultList.push_back(node->val);
+            node = node->right;
+        }
+    }
+private:
+    std::vector<int> resultList;
 };
