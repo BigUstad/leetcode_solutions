@@ -11,89 +11,48 @@
  */
 class Solution {
 public:
+    std::string morrisTraversalHelper(TreeNode* root) {
+        std::stringstream ss;
+        TreeNode* curr = root;
+        while (curr != nullptr) {
+            if (curr->left == nullptr) {
+                // If no left child visit this node & go right
+                ss << "nullptr"; // left, the in-order precedent is nullptr
+                ss << std::to_string(curr->val);
+                curr = curr->right;
+            } else {
+                // Find the inorder predecessor of curr
+                TreeNode* prev = curr->left;
+                while (prev->right != nullptr &&
+                    prev->right != curr) {
+                    prev = prev->right;
+                }
+                // Make curr the right child of its inorder predecessor
+                if (prev->right == nullptr) {
+                    prev->right = curr;
+                    curr = curr->left;
+                    ss << "nullptr";
+                } else {
+                    // Revert the changes made in tree structure.
+                    prev->right = nullptr;
+                    ss << std::to_string(curr->val);
+                    curr = curr->right;
+                }
+            }
+        }
+        return ss.str();
+    }
     bool isSameTree(TreeNode* p, TreeNode* q) {
-        if (p == nullptr && q == nullptr)
-            return true;
+        if (p == nullptr && q == nullptr) return true;
         if ((p == nullptr && q != nullptr) ||
-            (p != nullptr && q == nullptr))
+            (p != nullptr && q == nullptr)) 
             return false;
-        stack<TreeNode*> s;
-        string psStr = "";
-        string qsStr = "";
-        queue<TreeNode*> nq;
-        string pqStr = "";
-        string qqStr = "";
-        TreeNode *cur = p;
-        while (cur != nullptr || !s.empty())
-        {
-            while(cur != nullptr)
-            {
-                s.push(cur);
-                cur = cur->left;
-            }
-            cur = s.top();
-            psStr.append(to_string(cur->val));
-            s.pop();
-            cur = cur->right;
+        std::string pbfs = morrisTraversalHelper(p);
+        std::string qbfs = morrisTraversalHelper(q);
+        if (pbfs.size() != qbfs.size()) {
+            return false;
         }
-        while (!s.empty())
-        {
-            s.pop();
-        }
-        cur = q;
-        while (cur != nullptr || !s.empty())
-        {
-            while(cur != nullptr)
-            {
-                s.push(cur);
-                cur = cur->left;
-            }
-            cur = s.top();
-            qsStr.append(to_string(cur->val));
-            s.pop();
-            cur = cur->right;
-        }
-        bool res1 = (psStr.compare(qsStr) == 0);
-        cur = p;
-        nq.push(cur);
-        while(!nq.empty())
-        {
-            cur = nq.front();
-            if (cur == nullptr)
-            {
-                pqStr.append("N");
-                nq.pop();
-                continue;
-            }
-            pqStr.append(to_string(cur->val));
-            nq.pop();
-            //if (cur->left != nullptr)
-                nq.push(cur->left);
-            //else
-            //if (cur->right != nullptr)
-                nq.push(cur->right);
-        }
-        cur = q;
-        nq.push(cur);
-        while(!nq.empty())
-        {
-            cur = nq.front();
-            if (cur == nullptr)
-            {
-                qqStr.append("N");
-                nq.pop();
-                continue;
-            }
-            qqStr.append(to_string(cur->val));
-            nq.pop();
-            //if (cur->left != nullptr)
-                nq.push(cur->left);
-            //if (cur->right != nullptr)
-                nq.push(cur->right);
-        }
-        cout << pqStr << " " << qqStr <<endl;
-        bool res2 = (pqStr.compare(qqStr) == 0);
-        
-        return res1 && res2;
+        // Only analyzing strings of same size.
+        return (pbfs.compare(qbfs) == 0);
     }
 };
