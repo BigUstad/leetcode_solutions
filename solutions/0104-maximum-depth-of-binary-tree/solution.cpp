@@ -11,34 +11,50 @@
  */
 class Solution {
 public:
-    int maxDepth(TreeNode* root) {
-        if (root == nullptr)
-            return 0;
-        if (root->right == nullptr && root->left == nullptr)
-            return 1;
-        stack<pair<int, TreeNode*>> s;
-        TreeNode* cur = root;
-        pair<int, TreeNode*> curStack;
-        s.push(make_pair(1, cur));
-        int maxDepth = INT_MIN;
-        int depth = 1;
-        while (!s.empty())
-        {
-            cur = s.top().second;
-            depth = s.top().first;
-            s.pop();
-            if (depth > maxDepth)
-                    maxDepth = depth;
-            if (cur->right != nullptr)
-            {
-                s.push(make_pair(depth + 1, cur->right));
-            }
-            if (cur->left != nullptr)
-            {
-                s.push(make_pair(depth + 1, cur->left));
-            }
-            cout << maxDepth << endl;
+    void bfsHelper(TreeNode*& root, int& max_depth) {
+        if (root == nullptr) {
+            max_depth = 0;
+            return;
         }
-        return maxDepth;
+        if (root->left == nullptr && root->right == nullptr) {
+            max_depth = 1;
+            return;
+        }
+        max_depth = 1;
+        std::queue<TreeNode*> q;
+        if (root->left != nullptr) {
+            q.push(root->left);
+        }
+        if (root->right != nullptr) {
+            q.push(root->right);
+        }
+        // Signals end of nodes in cur depth
+        q.push(nullptr);
+        // BFS level 2 depth nodes are all in queue now.
+        while (!q.empty()) {
+            TreeNode*& front = q.front();
+            if (front == nullptr) {
+                ++max_depth;
+                // Not the last node
+                // size == 1 means traversal has ended
+                if (q.size() > 1) {
+                    // Signals end of nodes in cur depth
+                    q.push(nullptr);
+                }
+            } else {
+                if (front->left != nullptr) {
+                    q.push(front->left);
+                }
+                if (front->right != nullptr) {
+                    q.push(front->right);
+                }
+            }
+            q.pop();
+        }
+    }
+    int maxDepth(TreeNode* root) {
+        int max_depth = INT_MIN;
+        bfsHelper(root, max_depth);
+        return max_depth;
     }
 };
