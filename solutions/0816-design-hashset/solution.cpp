@@ -1,30 +1,34 @@
 class MyHashSet {
 public:
-    /** Initialize your data structure here. */
     MyHashSet() {
         
     }
     
     void add(int key) {
-        if ( contains(key) )
-            return;
-        hashSetMap[key] = time(0);
+        for(auto& k: set) {
+            if (k == key) {
+                // exists. return
+                return;
+            }
+        }
+        set.push_front(key);
     }
     
     void remove(int key) {
-        auto itr = hashSetMap.find(key);
-        if ( itr != hashSetMap.end() )
-        {
-            hashSetMap.erase(itr);
-        }
+        set.remove(key);
     }
     
-    /** Returns true if this set contains the specified element */
     bool contains(int key) {
-        return ( hashSetMap.find(key) != hashSetMap.end() );
+        for(auto& k: set) {
+            if (k == key) {
+                // exists. return
+                return true;
+            }
+        }
+        return false;
     }
 private:
-    std::map<int, time_t, std::less<int> > hashSetMap;
+    std::forward_list<int> set;
 };
 
 /**
