@@ -3,74 +3,70 @@
  * struct ListNode {
  *     int val;
  *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
 class Solution {
 public:
     ListNode* addTwoNumbers(ListNode* l1, ListNode* l2) {
-        ListNode* l1Cur = l1;
-        ListNode* l2Cur = l2;
-        int carryOver = 0;
-        ListNode* newHead = nullptr;
-        ListNode* lCur = nullptr;
-        ListNode* lPrev = nullptr;
-        while ( l1Cur != nullptr && l2Cur != nullptr )
-        {
-            int lSum = carryOver + l1Cur->val + l2Cur->val;
-            int lRem = lSum % 10;
-            int lQuot = lSum / 10;
-            ListNode* newNode = new ListNode(lRem);
-            if ( !newHead )
-            {
-                newHead = newNode;
-            }
-            carryOver = lQuot;
-            if ( lPrev )
-            {
-                lPrev->next = newNode;
-            }
-            lPrev = newNode;
-            l1Cur = l1Cur->next;
-            l2Cur = l2Cur->next;
+        if (!l1 && !l2) {
+            return new_head;
         }
-        lCur = (l1Cur != nullptr)?l1Cur:l2Cur;
-        while ( (lCur != nullptr) || carryOver > 0 )
-        {
-            int lSum;
-            int lRem;
-            if ( lCur )
-            {
-                lSum = carryOver + lCur->val;
-                lRem = lSum % 10;
-                carryOver = lSum / 10;
+        int carry_over = 0;
+        ListNode* l3_cur = nullptr;
+        while (l1 && l2) {
+            int l3_val = l1->val + l2->val + carry_over;
+            if (l3_val >= 10) {
+                carry_over = (l3_val / 10);
+                l3_val = (l3_val % 10);
+            } else {
+                carry_over = 0;
             }
-            else
-            {
-                lRem = carryOver;
-                if ( carryOver >= 10 )
-                {
-                    lRem = carryOver % 10;
-                    carryOver = lRem / 10;
-                    lSum = lRem;
-                }
-                else
-                {
-                    lRem = carryOver;
-                    carryOver = 0;
-                }
+            // std::cout << "1." << l3_val << std::endl;
+            if (!new_head) {
+                new_head = l3_cur = new ListNode(l3_val);
+            } else {
+                l3_cur->next = new ListNode(l3_val);
+                l3_cur = l3_cur->next;
             }
-            ListNode* newNode = new ListNode(lRem);
-            if ( lPrev )
-            {
-                lPrev->next = newNode;     
-                lPrev = newNode;
-
-            }
-         
-            if (lCur)
-                lCur = lCur->next;
+            l1 = l1->next;
+            l2 = l2->next;
         }
-        return newHead;
+        if (!l1 && !l2 && !carry_over) {
+            return new_head;
+        }
+        if (!l1 && !l2 && carry_over) {
+            l3_cur->next = new ListNode(carry_over);
+            return new_head;
+        }
+        // If the list is not completed.
+        l3_cur->next = (l1) ? l1 : l2;
+        if (carry_over) {
+            ListNode* l3_prev = l3_cur;
+            l3_cur = l3_cur->next;
+            while (l3_cur != nullptr) {
+                int l3_val = l3_cur->val + carry_over;
+                if (l3_val >= 10) {
+                    carry_over = (l3_val / 10);
+                    l3_val = (l3_val % 10);
+                } else {
+                    carry_over = 0;
+                }
+                // std::cout << "2." << l3_val << std::endl;
+                l3_cur->val = l3_val;
+                l3_prev = l3_cur;
+                l3_cur = l3_cur->next;
+            }
+            // std::cout << "3." << l3_cur << " " << carry_over << std::endl;
+            if (carry_over) {
+                l3_prev->next = new ListNode(carry_over);
+            }
+        }
+        return new_head;
     }
+
+private:
+    ListNode* new_head = nullptr;
 };
