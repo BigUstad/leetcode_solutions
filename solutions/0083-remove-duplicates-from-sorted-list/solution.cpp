@@ -3,37 +3,35 @@
  * struct ListNode {
  *     int val;
  *     ListNode *next;
- *     ListNode(int x) : val(x), next(NULL) {}
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
  * };
  */
 class Solution {
 public:
     ListNode* deleteDuplicates(ListNode* head) {
-     ListNode* holder = head;
-     if ( !head || head->next == nullptr )
-     {
+     if ( !head || head->next == nullptr ) {
          return head;
      }
+     ListNode* holder = head;
      ListNode* runner = head->next;
      bool change = false;
      while ( holder!= nullptr && runner != nullptr )
      {
-         // std::cout << " " << holder->val << " " << runner->val << std::endl;
-         while ( runner != nullptr && holder->val == runner->val )
-         {
+         while ( runner != nullptr && holder->val == runner->val ) {
              change = true;
              runner = runner->next;
          }
-         if ( change )
-         {
+         if ( change ) {
             holder->next = runner;
             holder = runner;
-            if ( runner != nullptr )
+            if ( runner != nullptr ){
                 runner = runner->next;
-            change = false;
+            }
+            change = false; // reset
          }
-         else
-         {
+         else {
              holder = holder->next;
              runner = runner->next;
          }
