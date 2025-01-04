@@ -8,52 +8,44 @@
  */
 class Solution {
 public:
-    ListNode *detectCycle(ListNode *head) {
-        if ( !head || !head->next )
-            return nullptr;
-        ListNode* runner = head->next;
+    bool detectCycleFirst(ListNode* head, ListNode*& runner, int &n) {
         ListNode* follower = head;
-        ListNode* prev = follower;
-        bool cycle = false;
-        unsigned int followCount = 1;
-        while ( !cycle && follower != nullptr && runner != nullptr )
-        {
-            if ( follower == runner )
-            {
-                std::cout << " Runner follower intersect at node: " << follower->val << std::endl;
-                // Cycle found
-                cycle = true;
-            }
-            prev = follower;
-            if ( runner->next != nullptr)
-                runner = runner->next->next;
-            else return nullptr;
+        while (follower && runner) {
             follower = follower->next;
-            ++followCount;
-        }
-        if ( cycle )
-        {
-            // follower == runner just confirms a cycle.
-            std::map<ListNode*, int> ptrMap;
-            ListNode* cur = head;
-            unsigned int curCount=0;
-            while (true )
-            {
-                if ( ptrMap.find(cur) == ptrMap.end() )
-                {
-                    // std::cout << " Not found in map: " << cur->val << std::endl;
-                    ptrMap[cur] = cur->val;
-                }
-                else
-                {
-                    std::cout << " Found in map: " << cur->val << std::endl;
-                    // Found the curve-causing node.
-                    return cur;
-                }
-                prev=cur;
-                cur=cur->next;
+            if (runner->next != nullptr) {
+                runner = runner->next->next;
+            } else {
+                return false;
             }
+            if (follower == runner) {
+                return true;
+            }
+            ++n;
         }
-        return nullptr;
+        // If either of them reached nullptr.
+        // No cycle
+        return false;
+    }
+    ListNode *detectCycle(ListNode *head) {
+        if (!head || !head->next) {
+            return nullptr;
+        }
+        int n = 0;
+        ListNode* runner = head;
+        if (!detectCycleFirst(head, runner, n)) {
+            return nullptr;
+        }
+        // At this point runner is pointing to a node in the cycle.
+        // Follower needs to catch up with it.
+        ListNode* follower = head;
+        while (follower != runner) {
+            // follower will touch each node once.
+            // Runner will remain in the cycle.
+            // So they will meet at one point
+            follower = follower->next;
+            runner = runner->next;
+        }
+
+        return runner;
     }
 };
