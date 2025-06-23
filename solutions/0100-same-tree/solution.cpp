@@ -11,48 +11,111 @@
  */
 class Solution {
 public:
-    std::string morrisTraversalHelper(TreeNode* root) {
-        std::stringstream ss;
-        TreeNode* curr = root;
-        while (curr != nullptr) {
-            if (curr->left == nullptr) {
-                // If no left child visit this node & go right
-                ss << "nullptr"; // left, the in-order precedent is nullptr
-                ss << std::to_string(curr->val);
-                curr = curr->right;
-            } else {
-                // Find the inorder predecessor of curr
-                TreeNode* prev = curr->left;
-                while (prev->right != nullptr &&
-                    prev->right != curr) {
-                    prev = prev->right;
+    // detailedBfsHelper - A BFS Helper that prints "ALL" nodes even the non-existant ones.
+    // Null nodes are appended in traversal as "L," or "R," signifying left-null or right-null node.
+    void detailedBfsHelper(TreeNode* root, std::string& traversal, uint8_t height) {
+        if (!root->left && !root->right) {
+            traversal.append(std::to_string(root->val));
+            return;
+        }
+        std::queue<TreeNode*> q;
+        q.push(root);
+        q.push(nullptr); // Signifies end of level traversal
+        height--;
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop();
+            if (!cur) {
+                if (q.empty()) {
+                    // All nodes processed
+                    break;
                 }
-                // Make curr the right child of its inorder predecessor
-                if (prev->right == nullptr) {
-                    prev->right = curr;
-                    curr = curr->left;
-                    ss << "nullptr";
-                } else {
-                    // Revert the changes made in tree structure.
-                    prev->right = nullptr;
-                    ss << std::to_string(curr->val);
-                    curr = curr->right;
+                // decrement height
+                height--;
+                q.push(nullptr);
+                continue;
+            } else {
+                if (cur->val > -10001 && cur->val < 10001) {
+                    traversal.append(std::to_string(cur->val));
+                    traversal.append(",");
+                } else if (cur->val == -10001) {
+                    traversal.append("L,");
+                } else if (cur->val == 10001) {
+                    traversal.append("R,");
+                }
+            }
+            if (cur->left) {
+                q.push(cur->left);
+            } else {
+                // Leaf node, don't add null nodes for height = 1
+                if (height > 0) {
+                    q.push(new TreeNode(-10001));
+                }
+            }
+            if (cur->right) {
+                q.push(cur->right);
+            } else {
+                // Leaf node, don't add null nodes for height = 1
+                if (height > 0) {
+                    q.push(new TreeNode(10001));
                 }
             }
         }
-        return ss.str();
+        // std::cout << "2. Traversal: " << traversal << "; height: " << height << std::endl;
+    }
+    // bfsHelper - A BFS Helper prints straight-forward traversal and also returns height as extra detail
+    void bfsHelper(TreeNode* root, std::string& traversal, uint8_t& height) {
+        std::queue<TreeNode*> q;
+        height = 0;
+        if (!root) {
+            return;
+        }
+        if (!root->left && !root->right) {
+            traversal.append(std::to_string(root->val));
+            return;
+        }
+        q.push(root);
+        q.push(nullptr); // Signifies end of level traversal
+        while(!q.empty()) {
+            TreeNode* cur = q.front(); q.pop();
+            if (!cur) {
+                // increment height
+                height++;
+                if (q.empty()) {
+                    // All nodes processed
+                    break;
+                }
+                q.push(nullptr);
+                continue;
+            } else {
+                traversal.append(std::to_string(cur->val));
+                traversal.append(",");
+            }
+            if (cur->left) {
+                q.push(cur->left);
+            }
+            if (cur->right) {
+                q.push(cur->right);
+            }
+        }
+        // std::cout << "1. Traversal: " << traversal << "; height: " << height << std::endl;
     }
     bool isSameTree(TreeNode* p, TreeNode* q) {
-        if (p == nullptr && q == nullptr) return true;
-        if ((p == nullptr && q != nullptr) ||
-            (p != nullptr && q == nullptr)) 
-            return false;
-        std::string pbfs = morrisTraversalHelper(p);
-        std::string qbfs = morrisTraversalHelper(q);
-        if (pbfs.size() != qbfs.size()) {
+        if (p == q || !p && !q) {
+            return true;
+        }
+        if (!p || !q) {
             return false;
         }
-        // Only analyzing strings of same size.
-        return (pbfs.compare(qbfs) == 0);
+        std::string p_traversal, q_traversal;
+        uint8_t p_height, q_height;
+        bfsHelper(p, p_traversal, p_height);
+        bfsHelper(q, q_traversal, q_height);
+        if (p_traversal != q_traversal || p_height != q_height) {
+            return false;
+        }
+        p_traversal.clear(); q_traversal.clear();
+        detailedBfsHelper(p, p_traversal, p_height);
+        detailedBfsHelper(q, q_traversal, q_height);
+        return (p_traversal == q_traversal);
     }
 };
