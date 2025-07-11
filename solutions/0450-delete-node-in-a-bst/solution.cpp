@@ -63,7 +63,10 @@ public:
         }
         // del_node == root
         if (del_node == root) {
+            TreeNode* temp = root;
             root = (left_single_child)?left_single_child:right_single_child;
+            delete temp;
+            solved = true;
             return;
         }
         if (prev->left == del_node) {
@@ -77,11 +80,11 @@ public:
             else
                 prev->right = right_single_child;                
         }
-        // delete del_node;
+        delete del_node;
         solved = true;
     }
     void DelNodeWithTwoChildren(TreeNode*& root, TreeNode*& del_node, TreeNode*& prev, bool& solved) {
-        if (solved || !del_node->right || !del_node->left) {
+        if (solved || !del_node || !del_node->right || !del_node->left) {
             return;
         }
         // Find left-most child node (next_in_order) of right subtree
@@ -101,7 +104,7 @@ public:
         }
         // Copy the "next in order" (left-most node of right subtree) value to del_node
         del_node->val = next_in_order->val;
-
+        delete next_in_order;
     }
     TreeNode* deleteNode(TreeNode* root, int key) {
         if (root == nullptr) {
