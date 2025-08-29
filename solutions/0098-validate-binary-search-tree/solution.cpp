@@ -11,46 +11,18 @@
  */
 class Solution {
 public:
+    bool checkValidBST(TreeNode* root, TreeNode* low, TreeNode* high) {
+        if (!root) {
+            return true;
+        }
+        if ((low && root->val <= low->val) ||
+            (high && root->val >= high->val)) {
+            return false;
+        }
+        return checkValidBST(root->right, root, high) &&
+               checkValidBST(root->left, low, root);
+    }
     bool isValidBST(TreeNode* root) {
-        for (auto& l: resultList) {
-            std::cout << l << "\t";
-        }
-        std::cout << std::endl;
-        inOrderTraversal(root);
-        for ( int i = 0;
-                i < resultList.size();
-                ++i ) {
-            if ( i > 0 &&
-                 resultList.at(i) < resultList.at(i - 1) ) {
-                return false;
-            }
-            if ( (i+1) <= ( resultList.size() - 1 ) &&
-                 resultList.at(i) >= resultList.at(i + 1) ) {
-                return false;
-            }
-        }
-        return true;
+        return checkValidBST(root, nullptr, nullptr);
     }
-
-    void inOrderTraversal(TreeNode* root) {
-        if ( root == nullptr ) {
-            return;
-        }
-        std::stack<TreeNode*> s;
-        s.push(root);
-        TreeNode* node(root->left);
-        while ( !s.empty() || node != nullptr ) {
-            while ( node != nullptr ) {
-                s.push(node);
-                node = node->left;
-            }
-            node = s.top();
-            s.pop();
-            // Process
-            resultList.push_back(node->val);
-            node = node->right;
-        }
-    }
-private:
-    std::vector<int> resultList;
 };
