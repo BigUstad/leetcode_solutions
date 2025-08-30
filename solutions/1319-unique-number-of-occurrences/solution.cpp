@@ -1,27 +1,14 @@
 class Solution {
 public:
     bool uniqueOccurrences(vector<int>& arr) {
-        std::unordered_map<int, unsigned int> am;
-        std::set<unsigned int> as;
-        for ( int i: arr )
-        {
-            auto itr = am.find(i);
-            if ( itr != am.end() )
-            {
-                itr->second++;
-            }
-            else
-            {
-                am[i] = 1;
-            }
+        std::unordered_map<int, int> am;
+        std::unordered_set<int> vs;
+        for (int& a: arr) {
+            am[a]++;
         }
-        unsigned int index = 0;
-        for (auto itr: am )
-        {
-            std::cout << "Inserting " << itr.first << " " << itr.second << std::endl;
-            as.insert(itr.second);
-            index++;
+        for (auto& am_p: am) {
+            vs.insert(am_p.second);
         }
-        return (as.size() == index);
+        return (vs.size() == am.size());
     }
 };
