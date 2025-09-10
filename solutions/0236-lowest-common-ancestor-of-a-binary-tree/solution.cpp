@@ -7,8 +7,63 @@
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+
 class Solution {
 public:
+    void postorderHelper(TreeNode* root, TreeNode* n, std::unordered_map<TreeNode*, TreeNode*>& parent_map) {
+        std::stack<TreeNode*> s1;
+        s1.push(root);
+        while (!s1.empty()) {
+            TreeNode* current = s1.top();
+            s1.pop();
+            if (current == n) {
+                break;
+            }
+            if (current && current->left) {
+                parent_map[current->left] = current;
+                s1.push(current->left);
+            }
+            if (current && current->right) {
+                parent_map[current->right] = current;
+                s1.push(current->right);
+            }
+        }
+    }
+
+    TreeNode* getLowestCommonAncestor(TreeNode*& root, TreeNode*& p, TreeNode*& q,
+                    std::unordered_map<TreeNode*, TreeNode*>& p_parent_map,
+                    std::unordered_map<TreeNode*, TreeNode*>& q_parent_map) {
+        std::unordered_set<TreeNode*> p_set;
+        std::vector<TreeNode*> q_vec;
+        TreeNode *cur = p;
+        while (cur) {
+            p_set.insert(cur);
+            cur = p_parent_map[cur];
+            if (cur == q) {
+                // std::cout << "cur == q" << std::endl;
+                return q;
+            }
+        }
+
+        cur = q;
+        while (cur) {
+            q_vec.push_back(cur);
+            cur = q_parent_map[cur];
+            if (cur == p) {
+                // std::cout << "cur == p" << std::endl;
+                return p;
+            }
+        }
+        // std::cout << "p_set size: " << p_set.size() << std::endl;
+        // std::cout << "q_vec size: " << q_vec.size() << std::endl;
+        for (auto& q: q_vec) {
+            // std::cout << "Checking: " << q->val << std::endl;
+            if (p_set.find(q) != p_set.end() && q != root) {
+                return q;
+            }
+        }
+        return root;
+    }
     TreeNode* lowestCommonAncestor(TreeNode* root, TreeNode* p, TreeNode* q) {
         if (!root) {
             return nullptr;
@@ -19,38 +74,13 @@ public:
         if (!p || !q) {
             return nullptr;
         }
-        std::vector<TreeNode*> p_path;
-        std::vector<TreeNode*> q_path;
-        TreeNode* l_ret = nullptr;
-        if (dfsHelper(root, p, p_path) && dfsHelper(root, q, q_path)) {
-            // TODO: Find the actual LCA
-            std::unordered_set<TreeNode*> both_paths;
-            for (auto& t_p: p_path) {
-                both_paths.insert(t_p);
-            }
-            for (auto& t_q: q_path) {
-                auto q_itr = both_paths.find(t_q);
-                if (q_itr != both_paths.end() && *q_itr != root) {
-                    l_ret = *q_itr;
-                }
-            }
-        }
+        std::unordered_map<TreeNode*, TreeNode*> p_parent_map;
+        std::unordered_map<TreeNode*, TreeNode*> q_parent_map;
+        postorderHelper(root, p, p_parent_map);
+        postorderHelper(root, q, q_parent_map);
+        // std::cout << "p_parent_map size: " << p_parent_map.size() << std::endl;
+        // std::cout << "q_parent_map size: " << q_parent_map.size() << std::endl;
 
-        return (l_ret) ? l_ret : root;
-    }
-    bool dfsHelper(TreeNode* root, TreeNode* t, std::vector<TreeNode*>& path) {
-        if (!root) return false;
-        // Add current node.
-        path.push_back(root);
-        if (root == t) {
-            return true;
-        }
-        // We are recursively searching left & right trees
-        if (dfsHelper(root->left, t, path) || dfsHelper(root->right, t, path)) {
-            return true;
-        }
-        // We release memory when we backtrack to the parent as target is not found.
-        path.pop_back();
-        return false;
+        return getLowestCommonAncestor(root, p, q, p_parent_map, q_parent_map);
     }
 };
