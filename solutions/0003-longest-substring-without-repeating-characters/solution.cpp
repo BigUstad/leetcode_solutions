@@ -7,7 +7,7 @@ public:
         size_t follower  = 0;
         size_t tracker = 0;
         int foundLth = 1;
-        std::set<char> chrSet;
+        std::unordered_set<char> chrSet;
         // O(n2). Not good
         chrSet.insert(s[follower]);
         while ( follower < (s.length() - 1) &&
@@ -36,3 +36,4 @@ public:
         return foundLth;
     }
 };
+
