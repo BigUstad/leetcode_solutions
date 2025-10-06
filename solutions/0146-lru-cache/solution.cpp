@@ -20,21 +20,20 @@ public:
     // put key, makes key the most recently used key
     void put(int key, int value) {
         auto c_itr = m_cache.find(key);
-        m_lru.push_front(std::make_pair(key, value));
+        m_lru.push_front({key, value});
         if (c_itr != m_cache.end()) {
             m_lru.erase(c_itr->second);
         }
         m_cache[key] = m_lru.begin();
-        // Delete the stale node
-        if (m_cache.size() > count) {
-            auto l_itr = m_lru.back();
-            // remove in cache
-            c_itr = m_cache.find(l_itr.first);
-            if (c_itr != m_cache.end()) { // Sanity check
-                m_cache.erase(c_itr);
-            }
-            m_lru.pop_back();
+        if (m_cache.size() <= count) {
+            return;
         }
+        // Delete the stale node
+        auto l_itr = m_lru.back();
+        // remove in cache
+        c_itr = m_cache.find(l_itr.first);
+        m_cache.erase(c_itr);
+        m_lru.pop_back();
     }
 private:
     size_t count;
