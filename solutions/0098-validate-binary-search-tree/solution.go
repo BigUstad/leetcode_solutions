@@ -7,34 +7,43 @@
  * }
  */
 
-func checkValidBST(root, low, high *TreeNode) bool {
-    if root == nil {
-        return true
-    }
-    // fmt.Print(root.Val)
-    // fmt.Print("  ")
-    if low != nil {
-        // fmt.Print(", low: ")
-        // fmt.Print(low.Val)
-    }
-    if high != nil {
-        // fmt.Print(", high: ")
-        // fmt.Print(high.Val)
-    }
-    if (low != nil && root.Val <= low.Val) ||
-        (high != nil && root.Val >= high.Val) {
-        return false
-    }
-    // fmt.Println()
 
-    return checkValidBST(root.Left, low, root) &&
-            checkValidBST(root.Right, root, high)
+func getInorder(root *TreeNode) []int {
+    stack := list.New()
+	var inorder []int
+	cur := root
+	for stack.Len() > 0 || cur != nil {
+		if cur != nil {
+			stack.PushFront(cur)
+			cur = cur.Left
+		} else {
+			cur = stack.Front().Value.(*TreeNode)
+			stack.Remove(stack.Front())
+			inorder = append(inorder, cur.Val)
+            cur = cur.Right
+		}
+		// fmt.Println(stack.Len())
+	}
+	stack = nil
+	return inorder
 }
 
 func isValidBST(root *TreeNode) bool {
-    if root == nil ||
-        (root.Left == nil && root.Right == nil) {
-        return true
-    }
-    return checkValidBST(root, nil, nil)
+	if root == nil { return true }
+	if root.Right == nil && root.Left == nil { return true }
+	inorder := getInorder(root)
+	l := len(inorder) - 1
+	// inorder. compare item at i to i + 1.
+	// Ascending order - valid bst
+	for i, n := range inorder {
+		// last item. no next item to compare
+		if i == l {
+			break
+		}
+		if n >= inorder[i+1] {
+			return false
+		}
+	}
+	return true
 }
+
